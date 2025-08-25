@@ -1,148 +1,306 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
-    <title>test graph</title>
-<script type="text/javascript" src="socialcalcconstants.js"></script>
-<script type="text/javascript" src="socialcalc-3.js"></script>
-<script type="text/javascript" src="socialcalctableeditor.js"></script>
-<script type="text/javascript" src="formatnumber2.js"></script>
-<script type="text/javascript" src="formula1.js"></script>
-<script type="text/javascript" src="socialcalcpopup.js"></script>
-<script type="text/javascript"
-src="socialcalcspreadsheetcontrol.js"></script>
-<script type="text/javascript" src="socialcalcgraph.js"></script>
-<link rel="stylesheet" type="text/css" href="socialcalc.css">
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta name="description" content="SocialCalc Graph Testing - Interactive spreadsheet with graphing capabilities">
+   <title>SocialCalc Graph Test</title>
+
+   <!-- SocialCalc Core Scripts -->
+   <script src="socialcalcconstants.js"></script>
+   <script src="socialcalc-3.js"></script>
+   <script src="socialcalctableeditor.js"></script>
+   <script src="formatnumber2.js"></script>
+   <script src="formula1.js"></script>
+   <script src="socialcalcpopup.js"></script>
+   <script src="socialcalcspreadsheetcontrol.js"></script>
+   <script src="socialcalcgraph.js"></script>
+
+   <!-- Stylesheets -->
+   <link rel="stylesheet" href="socialcalc.css">
+
+   <style>
+      body {
+         font-family: Verdana, Helvetica, Arial, sans-serif;
+         font-size: 14px;
+         margin: 0;
+         padding: 8px;
+         background-color: #fff;
+      }
+
+      .container {
+         max-width: none;
+         margin: 0;
+         padding: 0;
+      }
+
+      header {
+         margin-bottom: 8px;
+      }
+
+      header h1 {
+         margin: 0 0 4px 0;
+         font-size: 18px;
+      }
+
+      header p {
+         margin: 0 0 8px 0;
+         font-size: 12px;
+         color: #666;
+      }
+
+      #tableeditor {
+         margin: 0;
+         border: 1px solid #ccc;
+         border-radius: 4px;
+         min-height: calc(100vh - 100px);
+      }
+
+      #msg {
+         padding: 6px;
+         cursor: pointer;
+         background-color: #f5f5f5;
+         border-radius: 4px;
+         margin-top: 4px;
+         font-size: 12px;
+      }
+
+      .smaller {
+         font-size: 12px;
+      }
+   </style>
 </head>
-<body onresize="spreadsheet.DoOnResize();">
 
-<div id="tableeditor" style="margin:8px 10px 10px 10px;">editor goes here</div>
- <div id="msg" onclick="this.innerHTML='&nbsp;';"></div>
+<body>
+   <div class="container">
+      <main>
+         <div id="tableeditor" class="editor-container" role="application"
+            aria-label="Spreadsheet editor with graphing capabilities">
+            <div class="sr-only">Interactive spreadsheet editor. Use arrow keys to navigate cells.</div>
+            editor goes here
+         </div>
+
+         <div id="msg" class="message-area" onclick="clearMessage()" role="status" aria-live="polite" tabindex="0">
+            <span class="sr-only">Status messages will appear here</span>
+         </div>
+      </main>
+   </div>
 
 
-<script>
+   <script>
+      'use strict';
 
-// start everything
-   SocialCalc.EvalUserScripts = function() {
-   }
+      // Global variables
+      let spreadsheet;
 
-   SocialCalc.CallOutOnRenderCell = function() {
-   }
-
- 
-   SocialCalc.Constants.defaultImagePrefix = "images/sc-";
-   SocialCalc.Popup.imagePrefix = "images/sc-";
-
-   var spreadsheet = new SocialCalc.SpreadsheetControl();
-
-   // Set up the tabs we want
-
-   // Remove Audit
-
-   spreadsheet.tabs.splice(spreadsheet.tabnums.audit, 1);
-
-   spreadsheet.tabnums = {};
-   for (var i=0; i<spreadsheet.tabs.length; i++) {
-      spreadsheet.tabnums[spreadsheet.tabs[i].name] = i;
+      // Modern message clearing function
+      function clearMessage() {
+         const msgElement = document.getElementById('msg');
+         if (msgElement) {
+            msgElement.innerHTML = '&nbsp;';
+         }
       }
 
-   // Add Plain
+      // Modern resize handler
+      function handleResize() {
+         if (spreadsheet && typeof spreadsheet.DoOnResize === 'function') {
+            spreadsheet.DoOnResize();
+         }
+      }
 
-   spreadsheet.tabnums.plain = spreadsheet.tabs.length;
-   spreadsheet.tabs.push({name: "plain", text: "Plain", html:
-      '<div id="%id.plaintools" style="display:none;">'+
-      ' <div style="%tbt.">&nbsp;</div>'+
-      '</div>',
-      view: "plain",
-      onclick:
-         function(s, t) {
-            s.views.plain.element.innerHTML = s.CreateSheetHTML();
+      // Initialize application when DOM is ready
+      function initializeApplication() {
+         // SocialCalc initialization
+         SocialCalc.EvalUserScripts = function () {
+            // User scripts evaluation placeholder
+         };
+
+         SocialCalc.CallOutOnRenderCell = function () {
+            // Cell rendering callback placeholder
+         };
+
+         // Add missing CheckConstraints callback to prevent errors
+         SocialCalc.Callbacks.CheckConstraints = function (editor, cellname, value) {
+            // Constraint checking callback
+            // Return true to allow the edit, false to reject it
+            // You can add custom validation logic here
+            try {
+               // Basic validation - ensure value is not undefined/null for certain cells
+               if (value === undefined || value === null) {
+                  return true; // Allow empty values
+               }
+               
+               // Add any custom constraint checking logic here
+               // For example, restrict certain ranges or validate data types
+               
+               return true; // Allow all edits by default
+            } catch (error) {
+               console.warn('CheckConstraints error:', error);
+               return true; // Allow edit on error to prevent blocking
+            }
+         };
+
+         // Configure image paths
+         SocialCalc.Constants.defaultImagePrefix = "images/sc-";
+         SocialCalc.Popup.imagePrefix = "images/sc-";
+
+         // Create spreadsheet control
+         spreadsheet = new SocialCalc.SpreadsheetControl();
+
+         // Configure tabs - Remove Audit tab
+         spreadsheet.tabs.splice(spreadsheet.tabnums.audit, 1);
+
+         // Reset tab numbers
+         spreadsheet.tabnums = {};
+         for (let i = 0; i < spreadsheet.tabs.length; i++) {
+            spreadsheet.tabnums[spreadsheet.tabs[i].name] = i;
+         }
+
+         // Add Plain View tab
+         spreadsheet.tabnums.plain = spreadsheet.tabs.length;
+         spreadsheet.tabs.push({
+            name: "plain",
+            text: "Plain",
+            html: '<div id="%id.plaintools" style="display:none;">' +
+               ' <div style="%tbt.">&nbsp;</div>' +
+               '</div>',
+            view: "plain",
+            onclick: function (s, t) {
+               s.views.plain.element.innerHTML = s.CreateSheetHTML();
             },
-      onclickFocus: true
+            onclickFocus: true
+         });
+
+         spreadsheet.views["plain"] = {
+            name: "plain",
+            divStyle: "border:1px solid #dadce0;overflow:auto;border-radius:4px;",
+            html: '<div style="padding:16px;color:#5f6368;">Plain View</div>'
+         };
+
+         // Add Graph View tab
+         spreadsheet.tabnums.graph = spreadsheet.tabs.length;
+         spreadsheet.tabs.push({
+            name: "graph",
+            text: "Graph",
+            html: '<div id="%id.graphtools" class="graph-controls" style="display:none;">' +
+               ' <div style="%tbt.">' +
+               ' <table cellspacing="0" cellpadding="0">' +
+               '  <tr>' +
+               '   <td style="vertical-align:middle;padding-right:32px;padding-left:16px;">' +
+               '    <div style="%tbt;">Cells to Graph</div>' +
+               '    <div id="%id.graphrange" style="font-weight:bold;color:#1976d2;">Not Set</div>' +
+               '   </td>' +
+               '   <td style="vertical-align:top;padding-right:32px;">' +
+               '    <div style="%tbt;">Set Cells To Graph</div>' +
+               '    <select id="%id.graphlist" size="1" onfocus="%s.CmdGotFocus(this);" aria-label="Select range for graphing">' +
+               '     <option selected>[select range]</option>' +
+               '    </select>' +
+               '   </td>' +
+               '   <td style="vertical-align:middle;padding-right:4px;">' +
+               '    <div style="%tbt;">Graph Type</div>' +
+               '    <select id="%id.graphtype" size="1" onchange="GraphChanged(this);" onfocus="%s.CmdGotFocus(this);" aria-label="Select graph type"></select>' +
+               '    <button type="button" onclick="GraphSetCells();" style="margin-left:8px;">OK</button>' +
+               '   </td>' +
+               '   <td style="vertical-align:middle;padding-right:16px;">' +
+               '    <div style="%tbt;">&nbsp;</div>' +
+               '    <button id="%id.graphhelp" type="button" onclick="DoGraph(true);">Help</button>' +
+               '   </td>' +
+               '   <td style="vertical-align:middle;padding-right:16px;">' +
+               '    <label>Min X <input id="%id.graphMinX" type="number" onchange="MinMaxChanged(this,0);" onfocus="%s.CmdGotFocus(this);" size="5" aria-label="Minimum X value"/></label><br/>' +
+               '    <label>Max X <input id="%id.graphMaxX" type="number" onchange="MinMaxChanged(this,1);" onfocus="%s.CmdGotFocus(this);" size="5" aria-label="Maximum X value"/></label><br/>' +
+               '    <label>Min Y <input id="%id.graphMinY" type="number" onchange="MinMaxChanged(this,2);" onfocus="%s.CmdGotFocus(this);" size="5" aria-label="Minimum Y value"/></label><br/>' +
+               '    <label>Max Y <input id="%id.graphMaxY" type="number" onchange="MinMaxChanged(this,3);" onfocus="%s.CmdGotFocus(this);" size="5" aria-label="Maximum Y value"/></label>' +
+               '   </td>' +
+               '  </tr>' +
+               ' </table>' +
+               ' </div>' +
+               '</div>',
+            view: "graph",
+            onclick: GraphOnClick,
+            onclickFocus: true
+         });
+
+         spreadsheet.views["graph"] = {
+            name: "graph",
+            divStyle: "overflow:auto;border-radius:4px;",
+            values: {},
+            html: '<div style="padding:16px;color:#5f6368;">Graph View - Select data range and graph type to create visualizations</div>'
+         };
+
+         // Set up editor callbacks
+         spreadsheet.editor.SettingsCallbacks.graph = {
+            save: GraphSave,
+            load: GraphLoad
+         };
+
+         // Initialize the spreadsheet control
+         spreadsheet.InitializeSpreadsheetControl("tableeditor", 0, 0, 0);
+
+         // Load saved data
+         const savestr = "";
+         const parts = spreadsheet.DecodeSpreadsheetSave(savestr);
+
+         if (parts) {
+            if (parts.sheet) {
+               spreadsheet.sheet.ResetSheet();
+               spreadsheet.ParseSheetSave(savestr.substring(parts.sheet.start, parts.sheet.end));
+            }
+            if (parts.edit) {
+               spreadsheet.editor.LoadEditorSettings(savestr.substring(parts.edit.start, parts.edit.end));
+            }
+            if (parts.startupmacro) {
+               spreadsheet.editor.EditorScheduleSheetCommands(
+                  savestr.substring(parts.startupmacro.start, parts.startupmacro.end),
+                  false,
+                  true
+               );
+            }
+         }
+
+         // Handle recalculation
+         if (spreadsheet.sheet.attribs.recalc === "off") {
+            spreadsheet.sheet.attribs.needsrecalc = "yes";
+            spreadsheet.ExecuteCommand('redisplay', '');
+         } else {
+            spreadsheet.ExecuteCommand('recalc', '');
+         }
+
+         // Set up event listeners
+         window.addEventListener('resize', handleResize);
+
+         // Initial resize
+         handleResize();
+      }
+
+      // Initialize when DOM is loaded
+      if (document.readyState === 'loading') {
+         document.addEventListener('DOMContentLoaded', initializeApplication);
+      } else {
+         initializeApplication();
+      }
+
+      // Keyboard accessibility improvements
+      document.addEventListener('keydown', function (event) {
+         // Handle Escape key to clear messages
+         if (event.key === 'Escape') {
+            const msgElement = document.getElementById('msg');
+            if (msgElement && msgElement === document.activeElement) {
+               clearMessage();
+            }
+         }
+
+         // Handle Enter key on message area
+         if (event.key === 'Enter' || event.key === ' ') {
+            const msgElement = document.getElementById('msg');
+            if (msgElement && msgElement === document.activeElement) {
+               event.preventDefault();
+               clearMessage();
+            }
+         }
       });
 
-   spreadsheet.views["plain"] = {name: "plain",
-      divStyle: "border:1px solid black;overflow:auto;",
-      html: 'Plain View'
-      };
+   </script>
+</body>
 
-   // Add Graph
-
-   spreadsheet.tabnums.graph = spreadsheet.tabs.length;
-   spreadsheet.tabs.push({name: "graph", text: "Graph", html:
-      '<div id="%id.graphtools" style="display:none;">'+
-      ' <div style="%tbt.">'+
-      ' <table cellspacing="0" cellpadding="0"><tr>'+
-      '   <td style="vertical-align:middle;padding-right:32px;padding-left:16px;">'+
-      '    <div style="%tbt.">Cells to Graph</div>'+
-      '    <div id="%id.graphrange" style="font-weight:bold;">Not Set</div>'+
-      '   </td>'+
-      '  <td style="vertical-align:top;padding-right:32px;">'+
-      '   <div style="%tbt.">Set Cells To Graph</div>'+
-      '    <select id="%id.graphlist" size="1" onfocus="%s.CmdGotFocus(this);"><option selected>[select range]</option></select>'+
-      '   </td>'+
-      '   <td style="vertical-align:middle;padding-right:4px;">'+
-      '    <div style="%tbt.">Graph Type</div>'+
-      '     <select id="%id.graphtype" size="1" onchange="GraphChanged(this);" onfocus="%s.CmdGotFocus(this);"></select>'+
-      '     <input type="button" value="OK" onclick="GraphSetCells();" style="font-size:x-small;">'+
-      '    </div>'+
-      '   </td>'+
-      '   <td style="vertical-align:middle;padding-right:16px;">'+
-      '    <div style="%tbt.">&nbsp;</div>'+
-      '     <input id="%id.graphhelp" type="button" onclick="DoGraph(true);" value="Help" style="font-size:x-small;">'+
-      '    </div>'+
-      '   </td>'+
-	  '   <td style="vertical-align:middle;padding-right:16px;">'+
-      '     Min X <input id="%id.graphMinX" onchange="MinMaxChanged(this,0);" onfocus="%s.CmdGotFocus(this);" size=5/>'+
-      '     Max X <input id="%id.graphMaxX" onchange="MinMaxChanged(this,1);" onfocus="%s.CmdGotFocus(this);" size=5/><br/>'+
-      '     Min Y <input id="%id.graphMinY" onchange="MinMaxChanged(this,2);" onfocus="%s.CmdGotFocus(this);" size=5/>'+
-      '     Max Y <input id="%id.graphMaxY" onchange="MinMaxChanged(this,3);" onfocus="%s.CmdGotFocus(this);" size=5/>'+
-      '    </div>'+
-	  '   </td>'+
-      '  </tr></table>'+
-      ' </div>'+
-      '</div>',
-      view: "graph",
-      onclick: GraphOnClick,
-      onclickFocus: true
-      });
-
-   spreadsheet.views["graph"] = {name: "graph", divStyle: "overflow:auto;", values: {},
-      html: '<div style="padding:6px;">Graph View</div>'
-      };
-
-   spreadsheet.editor.SettingsCallbacks.graph = {save: GraphSave, load: GraphLoad};
-      
-   spreadsheet.InitializeSpreadsheetControl("tableeditor", 0, 0, 0);
-
-  var savestr = "";
-   var parts = spreadsheet.DecodeSpreadsheetSave(savestr);
-   if (parts) {
-      if (parts.sheet) {
-         spreadsheet.sheet.ResetSheet();
-         spreadsheet.ParseSheetSave(savestr.substring(parts.sheet.start, parts.sheet.end));
-         }
-      if (parts.edit) {
-         spreadsheet.editor.LoadEditorSettings(savestr.substring(parts.edit.start, parts.edit.end));
-         }
-      if (parts.startupmacro) {
-         spreadsheet.editor.EditorScheduleSheetCommands(savestr.substring(parts.startupmacro.start, parts.startupmacro.end), false, true);
-         }
-      }
-   if (spreadsheet.sheet.attribs.recalc=="off") {
-      spreadsheet.sheet.attribs.needsrecalc = "yes"; // default turn it on
-      spreadsheet.ExecuteCommand('redisplay', '');
-      }
-   else {
-      spreadsheet.ExecuteCommand('recalc', '');
-      }
-
-
-
-      
-      
-
-</script>
- </body>
 </html>
-

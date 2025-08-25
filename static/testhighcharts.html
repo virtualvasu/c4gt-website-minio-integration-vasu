@@ -1,72 +1,577 @@
 <!--
-playground to test multiple sheets in a page
+SocialCalc with Highcharts Integration - Modern HTML5 Version
+Playground to test multiple sheets with advanced charting capabilities
 -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>SocialCalc 0.8.1</title>
-<script type="text/javascript" src="socialcalcconstants.js"></script>
-<script type="text/javascript" src="socialcalc-3.js"></script>
-<script type="text/javascript" src="socialcalctouch.js"></script>
-<script type="text/javascript" src="socialcalctableeditor.js"></script>
-<script type="text/javascript" src="formatnumber2.js"></script>
-<script type="text/javascript" src="formula1.js"></script>
-<script type="text/javascript" src="socialcalcpopup.js"></script>
-<script type="text/javascript" src="socialcalcspreadsheetcontrol.js"></script>
-<script type="text/javascript" src="socialcalcworkbook.js"></script>
-<script type="text/javascript" src="socialcalcworkbookcontrol.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js" type="text/javascript"></script>
-<script type="text/javascript" src="Highcharts-2/js/highcharts.js"></script>
-		
-		<!-- 1a) Optional: add a theme file -->
-		
-			<script type="text/javascript" src="Highcharts-2/js/themes/gray.js"></script>
-		
-		
-		<!-- 1b) Optional: the exporting module -->
-		<script type="text/javascript" src="Highcharts-2/js/modules/exporting.js"></script>
-		
-
-<style>
-body, td, input, texarea {font-family:verdana,helvetica,sans-serif;font-size:small;}
-.smaller {font-size:smaller;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SocialCalc 0.8.1 with Highcharts integration - Interactive spreadsheet with advanced charting">
+    <meta name="keywords" content="spreadsheet, charts, highcharts, socialcalc, data visualization">
+    <title>SocialCalc 0.8.1 - Highcharts Edition</title>
+    
+    <!-- SocialCalc Core Scripts -->
+    <script src="socialcalcconstants.js"></script>
+    <script src="socialcalc-3.js"></script>
+    <script src="socialcalctouch.js"></script>
+    <script src="socialcalctableeditor.js"></script>
+    <script src="formatnumber2.js"></script>
+    <script src="formula1.js"></script>
+    <script src="socialcalcpopup.js"></script>
+    <script src="socialcalcspreadsheetcontrol.js"></script>
+    <script src="socialcalcworkbook.js"></script>
+    <script src="socialcalcworkbookcontrol.js"></script>
+    
+    <!-- External Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    
+    <!-- Highcharts Library -->
+    <script src="Highcharts-2/js/highcharts.js"></script>
+    <script src="Highcharts-2/js/themes/gray.js"></script>
+    <script src="Highcharts-2/js/modules/exporting.js"></script>
+    
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        /* Container and Layout */
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .workbook-control {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .editor-section {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .table-editor {
+            margin: 0;
+            padding: 20px;
+            background: #ffffff;
+            min-height: 400px;
+            border-radius: 0 0 12px 12px;
+        }
+        
+        /* Message Area */
+        .message-area {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-top: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        .message-area:hover {
+            background: #e9ecef;
+            border-color: #dee2e6;
+        }
+        
+        .message-area:focus {
+            outline: 2px solid #007bff;
+            outline-offset: 2px;
+        }
+        
+        .message-area::before {
+            content: "💬";
+            margin-right: 8px;
+            font-size: 16px;
+        }
+        
+        .message-area:empty::after {
+            content: "Click here to view status messages...";
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        /* Responsive Typography */
+        td, input, textarea {
+            font-family: inherit;
+            font-size: inherit;
+        }
+        
+        .smaller {
+            font-size: 0.875em;
+        }
+        
+        /* Workbook and Chart Styling */
+        .chart-container {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Enhanced Table Styling */
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+        
+        /* Modern Button Styling */
+        button, input[type="button"], input[type="submit"] {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+        }
+        
+        button:hover, input[type="button"]:hover, input[type="submit"]:hover {
+            background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        button:focus, input[type="button"]:focus, input[type="submit"]:focus {
+            outline: 2px solid #80bdff;
+            outline-offset: 2px;
+        }
+        
+        /* Form Controls */
+        input, select, textarea {
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 14px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+            outline: none;
+        }
+        
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 10px;
+            }
+            
+            body {
+                font-size: 12px;
+            }
+            
+            .table-editor {
+                padding: 12px;
+                margin: 0;
+            }
+            
+            .workbook-control {
+                padding: 12px;
+            }
+            
+            .header {
+                margin-bottom: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .app-container {
+                padding: 8px;
+            }
+            
+            .table-editor {
+                padding: 8px;
+            }
+        }
+        
+        /* Accessibility Improvements */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        /* Focus Indicators */
+        *:focus {
+            outline: 2px solid #007bff;
+            outline-offset: 2px;
+        }
+        
+        /* High Contrast Mode Support */
+        @media (prefers-contrast: high) {
+            body {
+                background: #ffffff;
+            }
+            
+            .workbook-control {
+                background: #000000;
+                color: #ffffff;
+            }
+            
+            .editor-section, .table-editor {
+                border: 2px solid #000000;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .workbook-control {
+                background: #333333 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .editor-section, .table-editor {
+                box-shadow: none;
+                border: 1px solid #000000;
+            }
+        }
+    </style>
 </head>
 
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div id="workbookControl" class="workbook-control" role="toolbar" aria-label="Workbook controls and navigation">
+                <div class="sr-only">Spreadsheet workbook controls. Use arrow keys to navigate between sheets.</div>
+            </div>
+        </header>
 
-<body style="background-color:#FFF;" onresize="spreadsheet.DoOnResize();">
+        <main>
+            <section class="editor-section">
+                <div id="tableeditor" class="table-editor" role="application" aria-label="Interactive spreadsheet with Highcharts integration">
+                    <div class="sr-only">
+                        Interactive spreadsheet editor with advanced charting capabilities. 
+                        Use arrow keys to navigate cells, Enter to edit, and Tab to move between interface elements.
+                    </div>
+                    <div class="loading"></div>
+                    Loading spreadsheet editor...
+                </div>
+            </section>
+            
+            <div id="msg" class="message-area" onclick="clearMessage()" role="status" aria-live="polite" tabindex="0" aria-label="Status messages">
+                <span class="sr-only">Status and notification messages will appear here</span>
+            </div>
+        </main>
+    </div>
 
-<div id="workbookControl" style="background-color:#80A9F3;">
-</div>
-
-<div style="margin:8px 0px 10px 0px;">
- <div id="tableeditor" style="margin:8px 0px 10px 0px;">editor goes here</div>
-</div>
- <div id="msg" onclick="this.innerHTML='&nbsp;';"></div>
-
-
-<script>
-
- SocialCalc.Constants.defaultGridCSS = ""
-
- SocialCalc.Callbacks.broadcast = function(a,b) {
-}
-
-var spreadsheet = new SocialCalc.SpreadsheetControl();
-
-var workbook = new SocialCalc.WorkBook(spreadsheet);
-workbook.InitializeWorkBook("sheet1");
-
-spreadsheet.InitializeSpreadsheetControl("tableeditor");
-spreadsheet.ExecuteCommand('redisplay', '');
-
-
-var workbookcontrol = new SocialCalc.WorkBookControl(workbook,"workbookControl","sheet1");
-workbookcontrol.InitializeWorkBookControl();
-
-spreadsheet.DoOnResize()
-
-</script>
+    <script>
+        'use strict';
+        
+        // Global variables
+        let spreadsheet;
+        let workbook;
+        let workbookcontrol;
+        
+        // Modern message clearing function
+        function clearMessage() {
+            const msgElement = document.getElementById('msg');
+            if (msgElement) {
+                msgElement.innerHTML = '&nbsp;';
+                msgElement.setAttribute('aria-label', 'Status messages cleared');
+                
+                // Reset after a moment for accessibility
+                setTimeout(() => {
+                    msgElement.setAttribute('aria-label', 'Status messages');
+                }, 2000);
+            }
+        }
+        
+        // Modern resize handler
+        function handleResize() {
+            if (spreadsheet && typeof spreadsheet.DoOnResize === 'function') {
+                try {
+                    spreadsheet.DoOnResize();
+                } catch (error) {
+                    console.warn('Resize handler error:', error);
+                }
+            }
+        }
+        
+        // Enhanced error handling
+        function handleError(error, context = 'Application') {
+            console.error(`${context} Error:`, error);
+            const msgElement = document.getElementById('msg');
+            if (msgElement) {
+                msgElement.innerHTML = `<span style="color: #dc3545;">⚠️ ${context} error occurred. Check console for details.</span>`;
+                msgElement.setAttribute('aria-label', `Error: ${context} error occurred`);
+            }
+        }
+        
+        // Show loading state
+        function showLoading(message = 'Loading...') {
+            const editorElement = document.getElementById('tableeditor');
+            if (editorElement) {
+                editorElement.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; height: 200px;">
+                        <div class="loading"></div>
+                        <span>${message}</span>
+                    </div>
+                `;
+            }
+        }
+        
+        // Initialize application
+        function initializeApplication() {
+            try {
+                showLoading('Initializing SocialCalc with Highcharts...');
+                
+                // Configure SocialCalc settings
+                SocialCalc.Constants.defaultGridCSS = "";
+                
+                // Set up broadcast callback
+                SocialCalc.Callbacks.broadcast = function(a, b) {
+                    // Enhanced broadcast callback with error handling
+                    try {
+                        console.log('SocialCalc broadcast:', a, b);
+                    } catch (error) {
+                        handleError(error, 'Broadcast');
+                    }
+                };
+                
+                // Add missing CheckConstraints callback to prevent errors
+                SocialCalc.Callbacks.CheckConstraints = function(editor, cellname, value) {
+                    // Constraint checking callback with enhanced error handling
+                    try {
+                        // Basic validation - ensure value is not undefined/null for certain cells
+                        if (value === undefined || value === null) {
+                            return true; // Allow empty values
+                        }
+                        
+                        // Add any custom constraint checking logic here
+                        // For example, restrict certain ranges or validate data types
+                        
+                        return true; // Allow all edits by default
+                    } catch (error) {
+                        console.warn('CheckConstraints error:', error);
+                        handleError(error, 'CheckConstraints');
+                        return true; // Allow edit on error to prevent blocking
+                    }
+                };
+                
+                // Create spreadsheet control
+                spreadsheet = new SocialCalc.SpreadsheetControl();
+                
+                // Create workbook
+                workbook = new SocialCalc.WorkBook(spreadsheet);
+                workbook.InitializeWorkBook("sheet1");
+                
+                // Initialize spreadsheet control
+                spreadsheet.InitializeSpreadsheetControl("tableeditor");
+                spreadsheet.ExecuteCommand('redisplay', '');
+                
+                // Create workbook control
+                workbookcontrol = new SocialCalc.WorkBookControl(workbook, "workbookControl", "sheet1");
+                workbookcontrol.InitializeWorkBookControl();
+                
+                // Initial resize
+                handleResize();
+                
+                // Update message
+                const msgElement = document.getElementById('msg');
+                if (msgElement) {
+                    msgElement.innerHTML = '✅ SocialCalc with Highcharts initialized successfully!';
+                    msgElement.setAttribute('aria-label', 'Application initialized successfully');
+                    
+                    // Clear success message after 3 seconds
+                    setTimeout(() => {
+                        msgElement.innerHTML = '&nbsp;';
+                        msgElement.setAttribute('aria-label', 'Status messages');
+                    }, 3000);
+                }
+                
+                console.log('SocialCalc with Highcharts initialized successfully');
+                
+            } catch (error) {
+                handleError(error, 'Initialization');
+            }
+        }
+        
+        // Enhanced keyboard accessibility
+        function setupKeyboardHandlers() {
+            document.addEventListener('keydown', function(event) {
+                // Handle Escape key to clear messages
+                if (event.key === 'Escape') {
+                    const msgElement = document.getElementById('msg');
+                    if (msgElement && (msgElement === document.activeElement || msgElement.contains(document.activeElement))) {
+                        clearMessage();
+                        event.preventDefault();
+                    }
+                }
+                
+                // Handle Enter/Space on message area
+                if ((event.key === 'Enter' || event.key === ' ') && event.target.id === 'msg') {
+                    event.preventDefault();
+                    clearMessage();
+                }
+                
+                // Handle Ctrl+S for save (prevent browser save)
+                if (event.ctrlKey && event.key === 's') {
+                    event.preventDefault();
+                    if (spreadsheet && typeof spreadsheet.ExecuteCommand === 'function') {
+                        try {
+                            spreadsheet.ExecuteCommand('save', '');
+                            const msgElement = document.getElementById('msg');
+                            if (msgElement) {
+                                msgElement.innerHTML = '💾 Spreadsheet saved';
+                                msgElement.setAttribute('aria-label', 'Spreadsheet saved');
+                            }
+                        } catch (error) {
+                            handleError(error, 'Save');
+                        }
+                    }
+                }
+                
+                // Handle F1 for help
+                if (event.key === 'F1') {
+                    event.preventDefault();
+                    const msgElement = document.getElementById('msg');
+                    if (msgElement) {
+                        msgElement.innerHTML = `
+                            📖 <strong>Help:</strong> 
+                            Arrow keys: Navigate | Enter: Edit cell | 
+                            Ctrl+S: Save | Escape: Clear messages | 
+                            F1: This help
+                        `;
+                        msgElement.setAttribute('aria-label', 'Help information displayed');
+                    }
+                }
+            });
+        }
+        
+        // Setup performance monitoring
+        function setupPerformanceMonitoring() {
+            if ('performance' in window) {
+                window.addEventListener('load', function() {
+                    setTimeout(() => {
+                        const perfData = performance.getEntriesByType('navigation')[0];
+                        console.log('Page load performance:', {
+                            domContentLoaded: perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart,
+                            loadComplete: perfData.loadEventEnd - perfData.loadEventStart,
+                            totalTime: perfData.loadEventEnd - perfData.navigationStart
+                        });
+                    }, 100);
+                });
+            }
+        }
+        
+        // Initialize when DOM is ready
+        function onDOMReady() {
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initializeApplication);
+            } else {
+                initializeApplication();
+            }
+            
+            // Setup event listeners
+            window.addEventListener('resize', handleResize);
+            window.addEventListener('beforeunload', function(event) {
+                // Optional: Add unsaved changes warning
+                if (spreadsheet && spreadsheet.editor && spreadsheet.editor.state === 'edit') {
+                    event.preventDefault();
+                    event.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+                    return event.returnValue;
+                }
+            });
+            
+            // Setup keyboard handlers
+            setupKeyboardHandlers();
+            
+            // Setup performance monitoring
+            setupPerformanceMonitoring();
+        }
+        
+        // Enhanced error boundary
+        window.addEventListener('error', function(event) {
+            console.error('Global error:', event.error);
+            handleError(event.error, 'Global');
+        });
+        
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('Unhandled promise rejection:', event.reason);
+            handleError(event.reason, 'Promise');
+        });
+        
+        // Initialize application
+        onDOMReady();
+        
+        // Expose global functions for debugging
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            window.debugSocialCalc = {
+                spreadsheet: () => spreadsheet,
+                workbook: () => workbook,
+                workbookcontrol: () => workbookcontrol,
+                clearMessage,
+                handleResize
+            };
+            console.log('Debug functions available at window.debugSocialCalc');
+        }
+        
+    </script>
 </body>
 </html>
