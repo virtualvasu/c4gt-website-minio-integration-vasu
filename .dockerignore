@@ -1,0 +1,6 @@
+__pycache__/
+.env.example
+env/
+.git/
+Dockerfile
+.DS_Store
