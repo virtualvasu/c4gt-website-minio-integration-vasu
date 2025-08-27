@@ -2,6 +2,10 @@
  * @fileoverview Workbook Control - Controls workbook actions (add/del/rename etc) and can appear at the
  * bottom of the screen. Currently appears at the top of the screen as proof of concept.
  * @author Ramu Ramamurthy
+ * 
+ * Refactored to ES6+ standards by Vasu Garg, 2025 (GitHub: @virtualvasu)
+ * 
+ * 
  */
 
 /**

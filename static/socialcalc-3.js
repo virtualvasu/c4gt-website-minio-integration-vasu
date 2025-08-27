@@ -10,6 +10,8 @@
  * specific to the spreadsheet or editor already present -- everything is dynamically
  * added to the DOM by this code, including the rendered sheet and any editing controls.
  *
+ * Refactored to ES6+ standards by Vasu Garg, 2025 (GitHub: @virtualvasu)
+ *
  * The library has several parts:
  * - Main SocialCalc code module (this file)
  * - Table Editor module

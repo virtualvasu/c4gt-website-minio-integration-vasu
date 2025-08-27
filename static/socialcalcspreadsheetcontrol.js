@@ -6,6 +6,10 @@
  * @author Dan Bricklin
  * @copyright 2008, 2009, 2010 Socialtext, Inc. All Rights Reserved.
  * @license CPAL-1.0
+ * 
+ * Refactored to ES6+ standards by Vasu Garg, 2025 (GitHub: @virtualvasu)
+ * 
+ * 
  */
 
 /**
