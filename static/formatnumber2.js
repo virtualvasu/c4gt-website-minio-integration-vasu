@@ -158,8 +158,8 @@ SocialCalc.FormatNumber.datevalues = {
  * @memberof SocialCalc.FormatNumber
  */
 SocialCalc.FormatNumber.formatNumberWithFormat = (rawvalue, format_string, currency_char) => {
-    const scc = SocialCalc.Constants;
-    const scfn = SocialCalc.FormatNumber;
+    let scc = SocialCalc.Constants;
+    let scfn = SocialCalc.FormatNumber;
 
     // Variable declarations with better organization
     let op, operandstr, fromend, cval, operandstrlc;
@@ -179,9 +179,9 @@ SocialCalc.FormatNumber.formatNumberWithFormat = (rawvalue, format_string, curre
     if (!isFinite(value)) return 'NaN';
 
     // Handle negative values
-    const negativevalue = value < 0;
+    let negativevalue = value < 0;
     if (negativevalue) value = -value;
-    const zerovalue = value === 0 ? 1 : 0;
+    let zerovalue = value === 0 ? 1 : 0;
 
     // Set default currency character
     currency_char = currency_char || scc.FormatNumber_DefaultCurrency;
@@ -555,8 +555,8 @@ SocialCalc.FormatNumber.formatNumberWithFormat = (rawvalue, format_string, curre
             
             // Cut down number of significant digits to avoid floating point artifacts
             if (value !== 0) { // only if non-zero
-                const factor = Math.floor(Math.LOG10E * Math.log(value)); // get integer magnitude as power of 10
-                const scaleFactor = Math.pow(10, 13 - factor); // turn into scaling factor
+                let factor = Math.floor(Math.LOG10E * Math.log(value)); // get integer magnitude as power of 10
+                let scaleFactor = Math.pow(10, 13 - factor); // turn into scaling factor
                 value = Math.floor(scaleFactor * value + 0.5) / scaleFactor; // scale, round, undo scaling
                 if (!isFinite(value)) return "NaN";
             }
@@ -748,7 +748,7 @@ SocialCalc.FormatNumber.formatNumberWithFormat = (rawvalue, format_string, curre
  * @memberof SocialCalc.FormatNumber
  */
 SocialCalc.FormatNumber.parse_format_string = function(format_defs, format_string) {
-    const scfn = SocialCalc.FormatNumber;
+    let scfn = SocialCalc.FormatNumber;
 
     // Return early if format already parsed
     if (format_defs[format_string]) return;
@@ -1038,10 +1038,10 @@ SocialCalc.FormatNumber.parse_format_string = function(format_defs, format_strin
  * @memberof SocialCalc.FormatNumber
  */
 SocialCalc.FormatNumber.parse_format_bracket = function(bracketstr) {
-    const scfn = SocialCalc.FormatNumber;
-    const scc = SocialCalc.Constants;
+    let scfn = SocialCalc.FormatNumber;
+    let scc = SocialCalc.Constants;
 
-    const bracketdata = {};
+    let bracketdata = {};
     let parts;
 
     // Handle currency brackets [$...]

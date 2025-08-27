@@ -1,772 +1,100 @@
 <!--
-SocialCalc with Sparklines Integration - Modern HTML5 Version
-Playground to test multiple sheets with inline data visualization
+playground to test multiple sheets in a page
 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="SocialCalc 0.8.1 with jQuery Sparklines - Interactive spreadsheet with inline data visualization">
-    <meta name="keywords" content="spreadsheet, sparklines, data visualization, socialcalc, charts">
-    <meta name="author" content="SocialCalc Team">
-    <title>SocialCalc 0.8.1 - Sparklines Edition</title>
-    
-    <!-- SocialCalc Core Scripts -->
-    <script src="socialcalcconstants.js"></script>
-    <script src="socialcalc-3.js"></script>
-    <script src="socialcalctableeditor.js"></script>
-    <script src="formatnumber2.js"></script>
-    <script src="formula1.js"></script>
-    <script src="socialcalcpopup.js"></script>
-    <script src="socialcalcspreadsheetcontrol.js"></script>
-    <script src="socialcalcworkbook.js"></script>
-    <script src="socialcalcworkbookcontrol.js"></script>
-    <script src="json2.js"></script>
-    
-    <!-- External Libraries -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="jquery.sparkline.min.js"></script>
-    
-    <style>
-        /* CSS Reset and Base Styles */
-        * {
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-            font-size: 14px;
-            line-height: 1.5;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-        }
-        
-        /* Container and Layout */
-        .app-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .header {
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            margin-bottom: 24px;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-        }
-        
-        .workbook-control {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 16px 16px 0 0;
-            position: relative;
-        }
-        
-        .workbook-control::before {
-            content: "✨";
-            position: absolute;
-            top: 16px;
-            right: 20px;
-            font-size: 24px;
-            opacity: 0.7;
-        }
-        
-        .workbook-control::after {
-            content: "Sparklines Edition";
-            position: absolute;
-            top: 20px;
-            right: 60px;
-            font-size: 12px;
-            opacity: 0.8;
-            font-weight: 500;
-        }
-        
-        .editor-section {
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            margin: 24px 0;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-        }
-        
-        .table-editor {
-            margin: 0;
-            padding: 24px;
-            background: #ffffff;
-            min-height: 500px;
-            border-radius: 0 0 16px 16px;
-            position: relative;
-        }
-        
-        /* Sparklines Enhancement */
-        .sparkline-container {
-            display: inline-block;
-            margin: 2px 4px;
-            padding: 2px;
-            border-radius: 3px;
-            background: rgba(103, 126, 234, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .sparkline-container:hover {
-            background: rgba(103, 126, 234, 0.2);
-            transform: scale(1.05);
-        }
-        
-        /* Message Area */
-        .message-area {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            border-radius: 12px;
-            padding: 16px 20px;
-            margin-top: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-height: 52px;
-            display: flex;
-            align-items: center;
-            position: relative;
-            box-shadow: 0 4px 16px rgba(240, 147, 251, 0.3);
-        }
-        
-        .message-area:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(240, 147, 251, 0.4);
-        }
-        
-        .message-area:focus {
-            outline: 3px solid rgba(255, 255, 255, 0.5);
-            outline-offset: 2px;
-        }
-        
-        .message-area::before {
-            content: "📊";
-            margin-right: 12px;
-            font-size: 20px;
-        }
-        
-        .message-area:empty::after {
-            content: "Click here to view sparkline and status messages...";
-            font-style: italic;
-            opacity: 0.9;
-        }
-        
-        /* Enhanced Typography */
-        td, input, textarea {
-            font-family: inherit;
-            font-size: inherit;
-        }
-        
-        .smaller {
-            font-size: 0.875em;
-        }
-        
-        /* Modern Form Controls */
-        input, select, textarea {
-            border: 2px solid #e1e8ed;
-            border-radius: 8px;
-            padding: 10px 12px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            background: #ffffff;
-        }
-        
-        input:focus, select:focus, textarea:focus {
-            border-color: #4facfe;
-            box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.1);
-            outline: none;
-            transform: scale(1.02);
-        }
-        
-        /* Enhanced Button Styling */
-        button, input[type="button"], input[type="submit"] {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        button:hover, input[type="button"]:hover, input[type="submit"]:hover {
-            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.4);
-            transform: translateY(-2px);
-        }
-        
-        button:focus, input[type="button"]:focus, input[type="submit"]:focus {
-            outline: 3px solid rgba(79, 172, 254, 0.5);
-            outline-offset: 2px;
-        }
-        
-        /* Loading Animation */
-        .loading {
-            display: inline-block;
-            width: 24px;
-            height: 24px;
-            border: 3px solid rgba(79, 172, 254, 0.3);
-            border-top: 3px solid #4facfe;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 12px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Pulse Animation for Sparklines */
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
-        }
-        
-        .sparkline-pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        /* Data Visualization Enhancements */
-        .data-viz-hint {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            border-radius: 8px;
-            padding: 12px 16px;
-            margin: 16px 0;
-            border-left: 4px solid #4facfe;
-            font-size: 13px;
-            color: #333;
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .app-container {
-                padding: 12px;
-            }
-            
-            body {
-                font-size: 12px;
-            }
-            
-            .table-editor {
-                padding: 16px;
-            }
-            
-            .workbook-control {
-                padding: 16px;
-            }
-            
-            .workbook-control::after {
-                display: none;
-            }
-            
-            .header {
-                margin-bottom: 16px;
-            }
-            
-            .message-area {
-                padding: 12px 16px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .app-container {
-                padding: 8px;
-            }
-            
-            .table-editor {
-                padding: 12px;
-            }
-            
-            .workbook-control::before {
-                display: none;
-            }
-        }
-        
-        /* Accessibility Improvements */
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
-        }
-        
-        /* Focus Indicators */
-        *:focus {
-            outline: 2px solid #4facfe;
-            outline-offset: 2px;
-        }
-        
-        /* High Contrast Mode Support */
-        @media (prefers-contrast: high) {
-            body {
-                background: #ffffff;
-                color: #000000;
-            }
-            
-            .workbook-control {
-                background: #000000;
-                color: #ffffff;
-            }
-            
-            .message-area {
-                background: #000000;
-                color: #ffffff;
-                border: 2px solid #ffffff;
-            }
-            
-            .editor-section, .table-editor {
-                border: 2px solid #000000;
-            }
-        }
-        
-        /* Reduced Motion Support */
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-        
-        /* Print Styles */
-        @media print {
-            body {
-                background: white;
-                color: black;
-            }
-            
-            .workbook-control {
-                background: #333333 !important;
-                color: white !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            
-            .editor-section, .table-editor {
-                box-shadow: none;
-                border: 1px solid #000000;
-            }
-            
-            .message-area {
-                background: #f0f0f0 !important;
-                color: #000000 !important;
-            }
-        }
-        
-        /* Dark Mode Support */
-        @media (prefers-color-scheme: dark) {
-            body {
-                background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-                color: #ecf0f1;
-            }
-            
-            .header, .editor-section, .table-editor {
-                background: #34495e;
-                color: #ecf0f1;
-            }
-            
-            input, select, textarea {
-                background: #2c3e50;
-                color: #ecf0f1;
-                border-color: #4a6741;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>SocialCalc 0.8.1</title>
+<script src="socialcalcconstants.js"></script>
+<script src="socialcalc-3.js"></script>
+<script src="socialcalctableeditor.js"></script>
+<script src="formatnumber2.js"></script>
+<script src="formula1.js"></script>
+<script src="socialcalcpopup.js"></script>
+<script src="socialcalcspreadsheetcontrol.js"></script>
+<script src="socialcalcworkbook.js"></script>
+<script src="socialcalcworkbookcontrol.js"></script>
+<script src="json2.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
+<script src="jquery.sparkline.min.js"></script>
+
+
+<style>
+body, td, input, textarea {
+    font-family: verdana, helvetica, sans-serif;
+    font-size: small;
+}
+.smaller {
+    font-size: smaller;
+}
+
+/* Modern responsive design improvements */
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
+#workbookControl {
+    background-color: #80A9F3;
+}
+
+#tableeditor {
+    margin: 8px 0 10px 0;
+}
+
+#msg {
+    cursor: pointer;
+}
+
+.container {
+    margin: 8px 0 10px 0;
+}
+</style>
 </head>
 
-<body>
-    <div class="app-container">
-        <header class="header">
-            <div id="workbookControl" class="workbook-control" role="toolbar" aria-label="Workbook controls with sparkline visualization">
-                <div class="sr-only">Spreadsheet workbook controls with sparkline data visualization. Use arrow keys to navigate between sheets.</div>
-            </div>
-        </header>
 
-        <main>
-            <div class="data-viz-hint">
-                💡 <strong>Sparklines Tip:</strong> Select data ranges and use sparkline functions to create inline charts. 
-                Try functions like SPARKLINE() for mini line charts within cells.
-            </div>
-            
-            <section class="editor-section">
-                <div id="tableeditor" class="table-editor" role="application" aria-label="Interactive spreadsheet with sparkline visualization capabilities">
-                    <div class="sr-only">
-                        Interactive spreadsheet editor with sparkline data visualization. 
-                        Use arrow keys to navigate cells, Enter to edit, and sparkline functions for inline charts.
-                    </div>
-                    <div class="loading"></div>
-                    Loading spreadsheet with sparklines support...
-                </div>
-            </section>
-            
-            <div id="msg" class="message-area" onclick="clearMessage()" role="status" aria-live="polite" tabindex="0" aria-label="Sparkline and status messages">
-                <span class="sr-only">Sparkline data visualization and status messages will appear here</span>
-            </div>
-        </main>
-    </div>
+<body style="background-color: #FFF;" onresize="spreadsheet.DoOnResize();">
 
-    <script>
-        'use strict';
-        
-        // Global variables
-        let spreadsheet;
-        let workbook;
-        let workbookcontrol;
-        
-        // Modern message clearing function
-        function clearMessage() {
-            const msgElement = document.getElementById('msg');
-            if (msgElement) {
-                msgElement.innerHTML = '&nbsp;';
-                msgElement.setAttribute('aria-label', 'Status messages cleared');
-                
-                // Reset after a moment for accessibility
-                setTimeout(() => {
-                    msgElement.setAttribute('aria-label', 'Sparkline and status messages');
-                }, 2000);
-            }
-        }
-        
-        // Modern resize handler
-        function handleResize() {
-            if (spreadsheet && typeof spreadsheet.DoOnResize === 'function') {
-                try {
-                    spreadsheet.DoOnResize();
-                    console.log('Spreadsheet resized successfully');
-                } catch (error) {
-                    console.warn('Resize handler error:', error);
-                }
-            }
-        }
-        
-        // Enhanced error handling
-        function handleError(error, context = 'Application') {
-            console.error(`${context} Error:`, error);
-            const msgElement = document.getElementById('msg');
-            if (msgElement) {
-                msgElement.innerHTML = `<span style="color: #ff4757;">⚠️ ${context} error occurred. Check console for details.</span>`;
-                msgElement.setAttribute('aria-label', `Error: ${context} error occurred`);
-            }
-        }
-        
-        // Show loading state
-        function showLoading(message = 'Loading...') {
-            const editorElement = document.getElementById('tableeditor');
-            if (editorElement) {
-                editorElement.innerHTML = `
-                    <div style="display: flex; align-items: center; justify-content: center; height: 200px;">
-                        <div class="loading"></div>
-                        <span>${message}</span>
-                    </div>
-                `;
-            }
-        }
-        
-        // Enhanced sparkline functionality
-        function initializeSparklines() {
-            try {
-                // Check if jQuery and sparkline plugin are loaded
-                if (typeof $ !== 'undefined' && $.fn.sparkline) {
-                    console.log('jQuery Sparkline plugin loaded successfully');
-                    
-                    // Add sparkline enhancement functions to SocialCalc
-                    SocialCalc.SparklineUtils = {
-                        createSparkline: function(element, data, options = {}) {
-                            try {
-                                const defaultOptions = {
-                                    type: 'line',
-                                    width: '100px',
-                                    height: '20px',
-                                    lineColor: '#4facfe',
-                                    fillColor: 'rgba(79, 172, 254, 0.1)',
-                                    spotColor: '#00f2fe',
-                                    minSpotColor: '#ff4757',
-                                    maxSpotColor: '#2ed573',
-                                    highlightSpotColor: '#ffa502',
-                                    highlightLineColor: '#ff4757',
-                                    spotRadius: 2,
-                                    lineWidth: 2
-                                };
-                                
-                                const finalOptions = { ...defaultOptions, ...options };
-                                $(element).sparkline(data, finalOptions);
-                                
-                                // Add pulse animation class
-                                $(element).addClass('sparkline-pulse');
-                                
-                                return true;
-                            } catch (error) {
-                                console.warn('Sparkline creation error:', error);
-                                return false;
-                            }
-                        },
-                        
-                        updateSparkline: function(element, newData) {
-                            try {
-                                $(element).sparkline(newData);
-                                return true;
-                            } catch (error) {
-                                console.warn('Sparkline update error:', error);
-                                return false;
-                            }
-                        }
-                    };
-                    
-                    // Demonstrate sparkline functionality
-                    setTimeout(() => {
-                        const msgElement = document.getElementById('msg');
-                        if (msgElement) {
-                            msgElement.innerHTML = '✨ Sparklines ready! Try entering data ranges and use sparkline functions.';
-                        }
-                    }, 2000);
-                } else {
-                    console.warn('jQuery Sparkline plugin not loaded');
-                }
-            } catch (error) {
-                handleError(error, 'Sparkline Initialization');
-            }
-        }
-        
-        // Initialize application
-        function initializeApplication() {
-            try {
-                showLoading('Initializing SocialCalc with Sparklines...');
-                
-                // Set up SocialCalc callbacks
-                SocialCalc.Callbacks.broadcast = function(a, b) {
-                    try {
-                        console.log('SocialCalc broadcast:', a, b);
-                        
-                        // Handle sparkline-related broadcasts
-                        if (typeof a === 'string' && a.includes('sparkline')) {
-                            initializeSparklines();
-                        }
-                    } catch (error) {
-                        handleError(error, 'Broadcast');
-                    }
-                };
-                
-                // Add missing CheckConstraints callback to prevent errors
-                SocialCalc.Callbacks.CheckConstraints = function(editor, cellname, value) {
-                    try {
-                        // Enhanced constraint checking for sparklines
-                        if (value === undefined || value === null) {
-                            return true;
-                        }
-                        
-                        // Special handling for sparkline functions
-                        if (typeof value === 'string' && value.toUpperCase().includes('SPARKLINE')) {
-                            console.log('Sparkline function detected in cell:', cellname);
-                            // Allow sparkline functions
-                            return true;
-                        }
-                        
-                        return true; // Allow all edits by default
-                    } catch (error) {
-                        console.warn('CheckConstraints error:', error);
-                        return true;
-                    }
-                };
-                
-                // Create spreadsheet control
-                spreadsheet = new SocialCalc.SpreadsheetControl();
-                
-                // Create workbook
-                workbook = new SocialCalc.WorkBook(spreadsheet);
-                workbook.InitializeWorkBook("sheet1");
-                
-                // Initialize spreadsheet control
-                spreadsheet.InitializeSpreadsheetControl("tableeditor");
-                spreadsheet.ExecuteCommand('redisplay', '');
-                
-                // Create workbook control
-                workbookcontrol = new SocialCalc.WorkBookControl(workbook, "workbookControl", "sheet1");
-                workbookcontrol.InitializeWorkBookControl();
-                
-                // Initialize sparklines
-                initializeSparklines();
-                
-                // Initial resize
-                handleResize();
-                
-                // Update success message
-                const msgElement = document.getElementById('msg');
-                if (msgElement) {
-                    msgElement.innerHTML = '🎉 SocialCalc with Sparklines initialized successfully! Ready for data visualization.';
-                    msgElement.setAttribute('aria-label', 'Application initialized successfully with sparklines support');
-                    
-                    // Clear success message after 4 seconds
-                    setTimeout(() => {
-                        msgElement.innerHTML = '&nbsp;';
-                        msgElement.setAttribute('aria-label', 'Sparkline and status messages');
-                    }, 4000);
-                }
-                
-                console.log('SocialCalc with Sparklines initialized successfully');
-                
-            } catch (error) {
-                handleError(error, 'Initialization');
-            }
-        }
-        
-        // Enhanced keyboard accessibility
-        function setupKeyboardHandlers() {
-            document.addEventListener('keydown', function(event) {
-                // Handle Escape key to clear messages
-                if (event.key === 'Escape') {
-                    const msgElement = document.getElementById('msg');
-                    if (msgElement && (msgElement === document.activeElement || msgElement.contains(document.activeElement))) {
-                        clearMessage();
-                        event.preventDefault();
-                    }
-                }
-                
-                // Handle Enter/Space on message area
-                if ((event.key === 'Enter' || event.key === ' ') && event.target.id === 'msg') {
-                    event.preventDefault();
-                    clearMessage();
-                }
-                
-                // Handle Ctrl+S for save
-                if (event.ctrlKey && event.key === 's') {
-                    event.preventDefault();
-                    if (spreadsheet && typeof spreadsheet.ExecuteCommand === 'function') {
-                        try {
-                            spreadsheet.ExecuteCommand('save', '');
-                            const msgElement = document.getElementById('msg');
-                            if (msgElement) {
-                                msgElement.innerHTML = '💾 Spreadsheet with sparklines saved';
-                                msgElement.setAttribute('aria-label', 'Spreadsheet saved');
-                            }
-                        } catch (error) {
-                            handleError(error, 'Save');
-                        }
-                    }
-                }
-                
-                // Handle F1 for sparkline help
-                if (event.key === 'F1') {
-                    event.preventDefault();
-                    const msgElement = document.getElementById('msg');
-                    if (msgElement) {
-                        msgElement.innerHTML = `
-                            📖 <strong>Sparklines Help:</strong> 
-                            Use SPARKLINE(range) function | Example: =SPARKLINE(A1:A10) | 
-                            Arrow keys: Navigate | Enter: Edit | Ctrl+S: Save | Escape: Clear
-                        `;
-                        msgElement.setAttribute('aria-label', 'Sparklines help information displayed');
-                    }
-                }
-                
-                // Handle F2 for sparkline demo
-                if (event.key === 'F2') {
-                    event.preventDefault();
-                    try {
-                        // Create demo sparkline data
-                        const demoData = [3, 5, 2, 8, 1, 9, 4, 7, 6];
-                        const msgElement = document.getElementById('msg');
-                        if (msgElement && typeof $ !== 'undefined' && $.fn.sparkline) {
-                            msgElement.innerHTML = 'Demo Sparkline: <span id="demo-sparkline"></span>';
-                            setTimeout(() => {
-                                $('#demo-sparkline').sparkline(demoData, {
-                                    type: 'line',
-                                    width: '100px',
-                                    height: '20px',
-                                    lineColor: '#4facfe'
-                                });
-                            }, 100);
-                        }
-                    } catch (error) {
-                        handleError(error, 'Demo Sparkline');
-                    }
-                }
-            });
-        }
-        
-        // Initialize when DOM is ready
-        function onDOMReady() {
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', initializeApplication);
-            } else {
-                initializeApplication();
-            }
-            
-            // Setup event listeners
-            window.addEventListener('resize', handleResize);
-            window.addEventListener('beforeunload', function(event) {
-                if (spreadsheet && spreadsheet.editor && spreadsheet.editor.state === 'edit') {
-                    event.preventDefault();
-                    event.returnValue = 'You have unsaved changes with sparklines. Are you sure you want to leave?';
-                    return event.returnValue;
-                }
-            });
-            
-            // Setup keyboard handlers
-            setupKeyboardHandlers();
-        }
-        
-        // Enhanced error boundary
-        window.addEventListener('error', function(event) {
-            console.error('Global error:', event.error);
-            handleError(event.error, 'Global');
-        });
-        
-        window.addEventListener('unhandledrejection', function(event) {
-            console.error('Unhandled promise rejection:', event.reason);
-            handleError(event.reason, 'Promise');
-        });
-        
-        // Initialize application
-        onDOMReady();
-        
-        // Expose debug functions for development
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            window.debugSocialCalc = {
-                spreadsheet: () => spreadsheet,
-                workbook: () => workbook,
-                workbookcontrol: () => workbookcontrol,
-                clearMessage,
-                handleResize,
-                initializeSparklines,
-                createDemoSparkline: function() {
-                    const demoData = [Math.random() * 10, Math.random() * 10, Math.random() * 10, Math.random() * 10, Math.random() * 10];
-                    const msgElement = document.getElementById('msg');
-                    if (msgElement && typeof $ !== 'undefined') {
-                        msgElement.innerHTML = 'Random Sparkline: <span id="random-sparkline"></span>';
-                        setTimeout(() => {
-                            $('#random-sparkline').sparkline(demoData, {
-                                type: 'bar',
-                                barColor: '#4facfe',
-                                height: '20px'
-                            });
-                        }, 100);
-                    }
-                }
-            };
-            console.log('Debug functions available at window.debugSocialCalc');
-            console.log('Press F2 for sparkline demo, F1 for help');
-        }
-        
-    </script>
+<div id="workbookControl">
+</div>
+
+<div class="container">
+ <div id="tableeditor">editor goes here</div>
+</div>
+ <div id="msg" onclick="this.innerHTML='&nbsp;';">&nbsp;</div>
+
+
+<script>
+ // Initialize broadcast callback
+ SocialCalc.Callbacks.broadcast = function(a, b) {
+     // Placeholder for broadcast functionality
+ };
+
+ // Create spreadsheet control
+ var spreadsheet = new SocialCalc.SpreadsheetControl();
+
+ // Create and initialize workbook
+ var workbook = new SocialCalc.WorkBook(spreadsheet);
+ workbook.InitializeWorkBook("sheet1");
+
+ // Initialize spreadsheet control and display
+ spreadsheet.InitializeSpreadsheetControl("tableeditor");
+ spreadsheet.ExecuteCommand('redisplay', '');
+
+ // Create and initialize workbook control
+ var workbookcontrol = new SocialCalc.WorkBookControl(workbook, "workbookControl", "sheet1");
+ workbookcontrol.InitializeWorkBookControl();
+
+ // Handle initial resize
+ spreadsheet.DoOnResize();
+</script>
 </body>
 </html>
