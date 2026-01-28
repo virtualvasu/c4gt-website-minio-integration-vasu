@@ -1,15 +1,146 @@
-{% extends "base.html" %} {% block head %} {% endblock %} {% block body %}
-<form method="POST" action="{{ url_for('login_post') }}">
-  <center>
-    Email: <input type="text" name="email" size="20" /><br />
-    Password: <input type="password" name="password" size="15" /><br />
-    <br />
-    <input type="submit" value="Login" />
-    <br /><br />
-    <a href="{{ url_for('register_get') }}">Register</a>&nbsp;&nbsp;<a
-      href="{{ url_for('lostpw_get') }}"
-      >Forgot Password</a
-    >
-  </center>
-</form>
+{% extends "base.html" %} {% block head %}
+<style type="text/css">
+  .login-container {
+    max-width: 400px;
+    margin: 60px auto;
+    padding: 40px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    border-top: 4px solid #3498db;
+  }
+
+  .login-title {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .login-subtitle {
+    text-align: center;
+    color: #7f8c8d;
+    font-size: 14px;
+    margin-bottom: 30px;
+  }
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .form-group input[type="text"],
+  .form-group input[type="password"] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #ecf0f1;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+    color: #2c3e50;
+  }
+
+  .form-group input[type="text"]::placeholder,
+  .form-group input[type="password"]::placeholder {
+    color: #bdc3c7;
+  }
+
+  .form-group input[type="text"]:focus,
+  .form-group input[type="password"]:focus {
+    outline: none;
+    background: white;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  }
+
+  .login-btn {
+    background: #3498db;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .login-btn:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+  }
+
+  .login-links {
+    text-align: center;
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 1px solid #ecf0f1;
+  }
+
+  .login-links a {
+    color: #3498db;
+    text-decoration: none;
+    font-size: 13px;
+    margin: 0 10px;
+    transition: color 0.3s ease;
+    font-weight: 600;
+  }
+
+  .login-links a:hover {
+    color: #2980b9;
+  }
+
+  .divider {
+    text-align: center;
+    color: #bdc3c7;
+    font-size: 12px;
+    margin: 0 5px;
+  }
+</style>
+{% endblock %} {% block body %}
+<div class="login-container">
+  <div class="login-title">Welcome Back</div>
+  <div class="login-subtitle">Sign in to your spreadsheets</div>
+
+  <form method="POST" action="{{ url_for('login_post') }}" class="login-form">
+    <div class="form-group">
+      <label for="email">Email Address</label>
+      <input type="text" id="email" name="email" placeholder="your@email.com" required />
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Enter your password" required />
+    </div>
+
+    <button type="submit" class="login-btn">Sign In</button>
+  </form>
+
+  <div class="login-links">
+    <a href="{{ url_for('register_get') }}">Create Account</a>
+    <span class="divider">•</span>
+    <a href="{{ url_for('lostpw_get') }}">Forgot Password</a>
+  </div>
+</div>
 {% endblock %}

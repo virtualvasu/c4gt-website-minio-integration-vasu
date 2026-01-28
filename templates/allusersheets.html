@@ -4,87 +4,251 @@
   src="{{ url_for('static', filename='paging.js') }}"
 ></script>
 <style type="text/css">
+  .sheets-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .sheets-header {
+    margin-bottom: 30px;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 20px;
+  }
+
+  .sheets-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 6px;
+  }
+
+  .sheets-subtitle {
+    color: #7f8c8d;
+    font-size: 14px;
+  }
+
+  .sheets-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+  }
+
+  .sheets-table thead {
+    background: #2c3e50;
+    color: white;
+  }
+
+  .sheets-table th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .sheets-table td {
+    padding: 14px 15px;
+    border-bottom: 1px solid #ecf0f1;
+    font-size: 14px;
+  }
+
+  .sheets-table tbody tr {
+    transition: background-color 0.2s ease;
+  }
+
+  .sheets-table tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+
+  .sheets-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .sheet-name {
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .btn-edit {
+    background: #3498db;
+    color: white;
+  }
+
+  .btn-edit:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+  }
+
+  .btn-view {
+    background: #27ae60;
+    color: white;
+  }
+
+  .btn-view:hover {
+    background: #229954;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+  }
+
+  .btn-delete {
+    background: #e74c3c;
+    color: white;
+  }
+
+  .btn-delete:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+  }
+
   .pg-normal {
-    color: black;
+    color: #3498db;
     font-weight: normal;
     text-decoration: none;
     cursor: pointer;
+    padding: 6px 10px;
+    margin: 0 2px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
   }
+
+  .pg-normal:hover {
+    background: #ecf0f1;
+  }
+
   .pg-selected {
-    color: black;
+    color: white;
     font-weight: bold;
-    text-decoration: underline;
+    background: #3498db;
+    padding: 6px 10px;
+    margin: 0 2px;
+    border-radius: 4px;
     cursor: pointer;
+  }
+
+  .pagination-wrapper {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #ecf0f1;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 40px;
+    color: #95a5a6;
   }
 </style>
 <script>
   function doedit(p) {
     document.getElementById("pagename").value = p;
     document.getElementById("edit").value = "yes";
+    document.querySelector("form").submit();
   }
 
   function doview(p) {
     document.getElementById("pagename").value = p;
     document.getElementById("view").value = "yes";
+    document.querySelector("form").submit();
   }
+
   function doremove(p) {
-    document.getElementById("pagename").value = p;
-    document.getElementById("delete").value = "yes";
+    if (confirm("Are you sure you want to delete '" + p + "'?")) {
+      document.getElementById("pagename").value = p;
+      document.getElementById("delete").value = "yes";
+      document.querySelector("form").submit();
+    }
   }
 </script>
 {% endblock %} {% block body %}
 
-<div class="span-7">
-  <hr class="space" />
-</div>
-<div class="span-8" align="center">
+<div class="sheets-container">
+  <div class="sheets-header">
+    <div class="sheets-title">Your Spreadsheets</div>
+    <div class="sheets-subtitle">Manage and edit your saved spreadsheets</div>
+  </div>
+
   <form action="{{ url_for('usersheet_post') }}" method="POST">
-    <div>
-      <table id="template-apps">
+    {% if entries %}
+    <table class="sheets-table">
+      <thead>
+        <tr>
+          <th>Spreadsheet Name</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="template-apps">
         {% for entry in entries %}
         <tr>
-          <td>{{ entry.fname }}</td>
+          <td class="sheet-name">{{ entry.fname }}</td>
           <td>
-            <input
-              class="smaller"
-              type="submit"
-              value="Edit"
-              onclick="doedit('{{ entry.fname }}');"
-            />
-          </td>
-          <td>
-            <input
-              class="smaller"
-              type="submit"
-              value="View"
-              onclick="doview('{{ entry.fname }}');"
-            />
-          </td>
-          <td>
-            <input
-              class="smaller"
-              type="submit"
-              value="Delete"
-              onclick="doremove('{{ entry.fname }}');"
-            />
+            <div class="action-buttons">
+              <button
+                type="button"
+                class="btn btn-edit"
+                onclick="doedit('{{ entry.fname }}');"
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                class="btn btn-view"
+                onclick="doview('{{ entry.fname }}');"
+              >
+                View
+              </button>
+              <button
+                type="button"
+                class="btn btn-delete"
+                onclick="doremove('{{ entry.fname }}');"
+              >
+                Delete
+              </button>
+            </div>
           </td>
         </tr>
         {% endfor %}
-      </table>
-
-      <div id="pageNavPosition"></div>
-
-      <input id="pagename" name="pagename" type="hidden" value="" />
-      <input id="edit" name="edit" type="hidden" value="no" />
-      <input id="view" name="view" type="hidden" value="no" />
-      <input id="delete" name="delete" type="hidden" value="no" />
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+      <p>No spreadsheets yet. Create one to get started!</p>
     </div>
-    <br />
-  </form>
-</div>
+    {% endif %}
 
-<div class="span-7 last">
-  <hr class="space" />
+    <div class="pagination-wrapper">
+      <div id="pageNavPosition"></div>
+    </div>
+
+    <input id="pagename" name="pagename" type="hidden" value="" />
+    <input id="edit" name="edit" type="hidden" value="no" />
+    <input id="view" name="view" type="hidden" value="no" />
+    <input id="delete" name="delete" type="hidden" value="no" />
+  </form>
 </div>
 
 <script type="text/javascript">
