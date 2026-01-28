@@ -357,8 +357,6 @@ Access at http://localhost:5000
 ## Additional Resources
 
 - [QUICKSTART.md](QUICKSTART.md) - Detailed quickstart guide
-- [SETUP.md](SETUP.md) - Complete setup instructions  
-- [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution guidelines
-- [SECURITY_AUDIT_REPORT.md](SECURITY_AUDIT_REPORT.md) - Security analysis
+- [SETUP.md](SETUP.md) - Complete setup instructions
 
 ````
