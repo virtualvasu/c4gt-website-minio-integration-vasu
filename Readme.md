@@ -216,7 +216,7 @@ python main.py
 
 **5. Access the application:**
 - 🌐 **Spreadsheet:** http://localhost:5000
-- 📦 **MinIO Console:** http://localhost:9001 (minioadmin / minioadmin)
+- 📦 **MinIO Console:** http://localhost:9001 (see `.env` for credentials)
 
 ---
 
@@ -277,16 +277,18 @@ cd excelinterop && composer install && cd ..
 
 5. **Configure environment:**
 
-Update `.env` file:
+Update `.env` file with your credentials (see `.env.example` for template):
 ```env
 MYSQL_HOST=localhost
 MYSQL_USER=root
-MYSQL_PASSWORD=your-password
-SQLALCHEMY_DATABASE_URI=mysql+pymysql://root:your-password@localhost:3306/c4gt_db
+MYSQL_PASSWORD=your-secure-password
+SQLALCHEMY_DATABASE_URI=mysql+pymysql://root:your-secure-password@localhost:3306/c4gt_db
 MINIO_ENDPOINT=http://localhost:9000
-MINIO_ACCESS_KEY=minioadmin
-MINIO_SECRET_KEY=minioadmin
+MINIO_ACCESS_KEY=your-access-key
+MINIO_SECRET_KEY=your-secret-key
 ```
+
+⚠️ **Important:** Never commit `.env` file with real credentials to version control.
 
 6. **Run the application:**
 ```bash
@@ -299,12 +301,14 @@ Access at http://localhost:5000
 
 ## Access Points
 
-| Service | URL | Default Credentials |
-|---------|-----|-----------|
-| **Spreadsheet App** | http://localhost:5000 | — |
-| **MinIO Console** | http://localhost:9001 | minioadmin / minioadmin |
-| **MinIO API** | http://localhost:9000 | minioadmin / minioadmin |
-| **MySQL** | localhost:3307 (Docker) / 3306 (Local) | root / {password} |
+| Service | URL | Access |
+|---------|-----|--------|
+| **Spreadsheet App** | http://localhost:5000 | No authentication |
+| **MinIO Console** | http://localhost:9001 | Configured in `.env` |
+| **MinIO API** | http://localhost:9000 | Configured in `.env` |
+| **MySQL** | localhost:3307 (Docker) / 3306 (Local) | Configured in `.env` |
+
+⚠️ **Important:** Store all credentials in `.env` file (not in version control)
 
 ---
 
